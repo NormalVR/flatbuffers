@@ -419,6 +419,30 @@ class Builder(object):
 
         return self.EndVector(len(x))
 
+    def CreateByteArray(self, bytes):
+        """CreateByteArray writes a bytearray from the given bytearray."""
+
+        self.assertNotNested()
+        ## @cond FLATBUFFERS_INTERNAL
+        self.nested = True
+        ## @endcond
+
+        if isinstance(bytes, bytearray):
+            x = bytes
+        else:
+            raise TypeError("non-bytearray passed to CreateByteArray")
+
+        self.Prep(N.UOffsetTFlags.bytewidth, (len(x)+1)*N.Uint8Flags.bytewidth)
+        self.Place(0, N.Uint8Flags)
+
+        l = UOffsetTFlags.py_type(len(bytes))
+        ## @cond FLATBUFFERS_INTERNAL
+        self.head = UOffsetTFlags.py_type(self.Head() - l)
+        ## @endcond
+        self.Bytes[self.Head():self.Head()+l] = x
+
+        return self.EndVector(len(x))
+
     ## @cond FLATBUFFERS_INTERNAL
     def assertNested(self):
         """
