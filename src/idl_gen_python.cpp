@@ -286,7 +286,7 @@ static void GetMemberOfVectorOfNonStructByteArray(const StructDef &struct_def,
   code += "(self):";
   code += OffsetPrefix(field);
   // Grab the sub bytearray from the main bytearray starting at the offset and ending at the length + offset.
-  code += Indent + Indent + Indent + "self._tab.Bytes[self._tab.Vector(o):(self._tab.VectorLen(o) + self._tab.Vector(o))]\n";
+  code += Indent + Indent + Indent + "return self._tab.Bytes[self._tab.Vector(o):(self._tab.VectorLen(o) + self._tab.Vector(o))]\n";
   code += Indent + Indent + "return \"\"\n";
   code += "\n";
 }
