@@ -274,6 +274,23 @@ static void GetMemberOfVectorOfNonStruct(const StructDef &struct_def,
   code += "\n";
 }
 
+// Get the value of a vector's non-struct as a bytearray.
+static void GetMemberOfVectorOfNonStructByteArray(const StructDef &struct_def,
+                                                  const FieldDef &field,
+                                                  std::string *code_ptr) {
+  std::string &code = *code_ptr;
+
+  GenReceiver(struct_def, code_ptr);
+  code += MakeCamel(field.name);
+  code += "ByteArray";
+  code += "(self):";
+  code += OffsetPrefix(field);
+  // Grab the sub bytearray from the main bytearray starting at the offset and ending at the length + offset.
+  code += Indent + Indent + Indent + "return self._tab.Bytes[self._tab.Vector(o):(self._tab.VectorLen(o) + self._tab.Vector(o))]\n";
+  code += Indent + Indent + "return \"\"\n";
+  code += "\n";
+}
+
 // Begin the creator function signature.
 static void BeginBuilderArgs(const StructDef &struct_def,
                              std::string *code_ptr) {
@@ -440,6 +457,7 @@ static void GenStructAccessor(const StructDef &struct_def,
           GetMemberOfVectorOfStruct(struct_def, field, code_ptr);
         } else {
           GetMemberOfVectorOfNonStruct(struct_def, field, code_ptr);
+          GetMemberOfVectorOfNonStructByteArray(struct_def, field, code_ptr);
         }
         break;
       }
