@@ -403,8 +403,6 @@ class Builder(object):
             x = s.encode(encoding, errors)
         elif isinstance(s, compat.binary_types):
             x = s
-        elif isinstance(s, bytearray):
-            x = s
         else:
             raise TypeError("non-string passed to CreateString")
 
@@ -419,23 +417,23 @@ class Builder(object):
 
         return self.EndVector(len(x))
 
-    def CreateByteArray(self, bytes):
-        """CreateByteArray writes a bytearray from the given bytearray."""
+    def CreateByteArray(self, bts):
+        """CreateByteArray writes a bytearray from the given bytearray or bytes."""
 
         self.assertNotNested()
         ## @cond FLATBUFFERS_INTERNAL
         self.nested = True
         ## @endcond
 
-        if isinstance(bytes, bytearray):
-            x = bytes
+        if isinstance(bts, bytearray) or isinstance(bts, bytes):
+            x = bts
         else:
-            raise TypeError("non-bytearray passed to CreateByteArray")
+            raise TypeError("non-bytearray or bytes passed to CreateByteArray")
 
         self.Prep(N.UOffsetTFlags.bytewidth, (len(x)+1)*N.Uint8Flags.bytewidth)
         self.Place(0, N.Uint8Flags)
 
-        l = UOffsetTFlags.py_type(len(bytes))
+        l = UOffsetTFlags.py_type(len(bts))
         ## @cond FLATBUFFERS_INTERNAL
         self.head = UOffsetTFlags.py_type(self.Head() - l)
         ## @endcond
